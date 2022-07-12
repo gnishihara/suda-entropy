@@ -122,9 +122,9 @@ dset3 |> select(-data) |>
 
 # 画像の区分毎の変動係数
 cols = viridis::cividis(6)
-cam1a = dset4 |> select(-data) |> 
+cam1a = dset3 |> select(-data) |> 
   filter(camera == "01") |> 
-  unnest(mean) |> 
+  unnest(mean1) |> 
   filter(m != "01") |> print() |> 
   ggplot() + 
   geom_point(aes(x = starttime,  y = mean), size = 0.5, col = cols[2]) + 
@@ -142,19 +142,19 @@ cam1a = dset4 |> select(-data) |>
 
 cam2a = cam1a %+% 
   (dset4 |> select(-data) |> 
-     filter(camera == "02") |> unnest(mean) |> 
+     filter(camera == "02") |> unnest(mean1) |> 
      filter(m != "01")) +
   labs(title = "Camera 02 (220621)") 
 
 cam3a = cam1a %+% (dset4 |> select(-data) |> 
   filter(camera == "03") |> 
-  unnest(mean) |> 
+  unnest(mean1) |> 
   filter(m != "01")) +
   labs(title = "Camera 03 (220621)") 
 
 cam4a = cam1a %+% (dset4 |> select(-data) |> 
   filter(camera == "04") |> 
-  unnest(mean) |> 
+  unnest(mean1) |> 
   filter(m != "01")) +
   labs(title = "Camera 04 (220621)") 
 
@@ -164,7 +164,7 @@ save_plot("2206201-mean.pdf", w = 400, h = 300, plot = pout)
 
 cam1b = dset4 |> select(-data) |> 
   filter(camera == "01") |> 
-  unnest(mean) |> 
+  unnest(mean1) |> 
   filter(m != "01") |> print() |> 
   ggplot() + 
   geom_point(aes(x = starttime,  y = sd^2), size = 0.5, col = cols[2]) + 
@@ -182,19 +182,19 @@ cam1b = dset4 |> select(-data) |>
 
 cam2b = cam1b %+% (dset4 |> select(-data) |> 
                    filter(camera == "02") |> 
-                   unnest(mean) |> 
+                   unnest(mean1) |> 
                    filter(m != "01")) +
   labs(title = "Camera 02 (220621)") 
 
 cam3b = cam1b %+% (dset4 |> select(-data) |> 
                    filter(camera == "03") |> 
-                   unnest(mean) |> 
+                   unnest(mean1) |> 
                    filter(m != "01")) +
   labs(title = "Camera 03 (220621)") 
 
 cam4b = cam1b %+% (dset4 |> select(-data) |> 
                    filter(camera == "04") |> 
-                   unnest(mean) |> 
+                   unnest(mean1) |> 
                    filter(m != "01")) +
   labs(title = "Camera 04 (220621)") 
 
@@ -212,7 +212,11 @@ save_plot("2206201-timeseries.pdf", w = 300, h = 500, plot = pout)
 
 
 
+# Do a PCA on the mean vs sd^2, then a linear regression
+# of PC1 and PC2 against time and camera.
 
+library(vegan)
+rda(
 
 
 
