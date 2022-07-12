@@ -164,7 +164,7 @@ save_plot("2206201-mean.pdf", w = 400, h = 300, plot = pout)
 
 cam1b = dset3 |> select(-data) |> 
   filter(camera == "01") |> 
-  unnest(mean1) |> 
+  unnest(mean2) |> 
   filter(m != "01") |> print() |> 
   ggplot() + 
   geom_point(aes(x = starttime,  y = sd^2), size = 0.5, col = cols[2]) + 
@@ -182,19 +182,19 @@ cam1b = dset3 |> select(-data) |>
 
 cam2b = cam1b %+% (dset3 |> select(-data) |> 
                    filter(camera == "02") |> 
-                   unnest(mean1) |> 
+                   unnest(mean2) |> 
                    filter(m != "01")) +
   labs(title = "Camera 02 (220621)") 
 
 cam3b = cam1b %+% (dset3 |> select(-data) |> 
                    filter(camera == "03") |> 
-                   unnest(mean1) |> 
+                   unnest(mean2) |> 
                    filter(m != "01")) +
   labs(title = "Camera 03 (220621)") 
 
 cam4b = cam1b %+% (dset3 |> select(-data) |> 
                    filter(camera == "04") |> 
-                   unnest(mean1) |> 
+                   unnest(mean2) |> 
                    filter(m != "01")) +
   labs(title = "Camera 04 (220621)") 
 
