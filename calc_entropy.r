@@ -141,18 +141,18 @@ cam1a = dset3 |> select(-data) |>
   theme(panel.grid = element_blank())
 
 cam2a = cam1a %+% 
-  (dset4 |> select(-data) |> 
+  (dset3 |> select(-data) |> 
      filter(camera == "02") |> unnest(mean1) |> 
      filter(m != "01")) +
   labs(title = "Camera 02 (220621)") 
 
-cam3a = cam1a %+% (dset4 |> select(-data) |> 
+cam3a = cam1a %+% (dset3 |> select(-data) |> 
   filter(camera == "03") |> 
   unnest(mean1) |> 
   filter(m != "01")) +
   labs(title = "Camera 03 (220621)") 
 
-cam4a = cam1a %+% (dset4 |> select(-data) |> 
+cam4a = cam1a %+% (dset3 |> select(-data) |> 
   filter(camera == "04") |> 
   unnest(mean1) |> 
   filter(m != "01")) +
@@ -162,7 +162,7 @@ pout = cam1a + cam2a + cam3a + cam4a + plot_layout(ncol = 2, nrow = 2)
 save_plot("2206201-mean.pdf", w = 400, h = 300, plot = pout)
 
 
-cam1b = dset4 |> select(-data) |> 
+cam1b = dset3 |> select(-data) |> 
   filter(camera == "01") |> 
   unnest(mean1) |> 
   filter(m != "01") |> print() |> 
@@ -180,19 +180,19 @@ cam1b = dset4 |> select(-data) |>
   labs(title = "Camera 01 (220621)") +
   theme(panel.grid = element_blank())
 
-cam2b = cam1b %+% (dset4 |> select(-data) |> 
+cam2b = cam1b %+% (dset3 |> select(-data) |> 
                    filter(camera == "02") |> 
                    unnest(mean1) |> 
                    filter(m != "01")) +
   labs(title = "Camera 02 (220621)") 
 
-cam3b = cam1b %+% (dset4 |> select(-data) |> 
+cam3b = cam1b %+% (dset3 |> select(-data) |> 
                    filter(camera == "03") |> 
                    unnest(mean1) |> 
                    filter(m != "01")) +
   labs(title = "Camera 03 (220621)") 
 
-cam4b = cam1b %+% (dset4 |> select(-data) |> 
+cam4b = cam1b %+% (dset3 |> select(-data) |> 
                    filter(camera == "04") |> 
                    unnest(mean1) |> 
                    filter(m != "01")) +
@@ -216,7 +216,6 @@ save_plot("2206201-timeseries.pdf", w = 300, h = 500, plot = pout)
 # of PC1 and PC2 against time and camera.
 
 library(vegan)
-rda(
 
 
 
