@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.pdf
+*.png
+_images/
+tmp_text/
+MP4/
+rds/
