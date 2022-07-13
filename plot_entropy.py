@@ -255,7 +255,7 @@ def make_dynamic_plot(X1, X2, Xsub, xval, fname):
 
 # Change if needed. ##########################################################################################
 overwrite_file = False
-basepath = "/home/gnishihara/Lab_Data/sudar/movie/arikawa_220525"
+basepath = "/home/gnishihara/Lab_Data/sudar/movie/arikawa_220621"
 ##############################################################################################################
 
 filelist = os.listdir(basepath)
