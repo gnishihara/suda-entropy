@@ -1,11 +1,9 @@
 project:
-  type: website
-  output-dir: docs
+  title: "Image_Entropy"
+  output-dir: docs/
   render: 
-    - process_video.qmd
-execute:
+    - image_entropy.qmd
+execute: 
   freeze: auto
-format:
-  html:
-    html-math-method: katex
 lang: ja
+
