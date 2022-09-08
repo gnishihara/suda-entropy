@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="quarto-1.1.189" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+<meta name="author" content="Greg Nishihara" />
+
+<title>研究室用：動画エントロピーの解析</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<!-- htmldependencies:E3FAD763 -->
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索"
+  }
+}</script>
+
+  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css" />
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <div id="quarto-toc-target"></div>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">研究室用：動画エントロピーの解析</h1>
+<p class="subtitle lead">エントロピーは計算済み</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">作者</div>
+    <div class="quarto-title-meta-contents">
+             <p>Greg Nishihara </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">公開</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2022年9月8日</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<blockquote>
+<p>エントロピーは計算済みです。 データファイルはそれぞれの動画フォルダのサブフォルダに入っている。</p>
+</blockquote>
+<section id="必要なパッケージ" class="level2">
+<h2>必要なパッケージ</h2>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+✔ ggplot2 3.3.6     ✔ purrr   0.3.4
+✔ tibble  3.1.8     ✔ dplyr   1.0.9
+✔ tidyr   1.2.0     ✔ stringr 1.4.0
+✔ readr   2.1.2     ✔ forcats 0.5.1
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magick)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to ImageMagick 6.9.11.60
+Enabled features: fontconfig, freetype, fftw, heic, lcms, pango, webp, x11
+Disabled features: cairo, ghostscript, raw, rsvg
+Using 32 threads</code></pre>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggvegan)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: vegan
+Loading required package: permute
+Loading required package: lattice
+This is vegan 2.6-2</code></pre>
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(showtext)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: sysfonts
+Loading required package: showtextdb</code></pre>
+</div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: &#39;lubridate&#39;
+
+The following objects are masked from &#39;package:base&#39;:
+
+    date, intersect, setdiff, union</code></pre>
+</div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vegan)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gnnlab)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Python の numpy モジュールを読み込む</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span></code></pre></div>
+</div>
+<p>Python のモジュールはここで準備する。</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>np <span class="ot">=</span> <span class="fu">import</span>(<span class="st">&quot;numpy&quot;</span>)</span></code></pre></div>
+</div>
+</section>
+<section id="エントロピーとは" class="level2">
+<h2>エントロピーとは</h2>
+<p>エントロピー <span class="math inline">(S)</span> は <strong>乱雑さ</strong> や <strong>不規則さ</strong> を表現する情報の尺度です。 熱力学、生態学、情報理論に応用されています。</p>
+<p>生態学のシャノン指数 <span class="math inline">(H&#39;)</span> はエントロピーと同じ用に求めます。</p>
+<p><span class="math display">
+S = H&#39; = -\sum_{i=1}^{R} p_i\,ln( p_i)
+</span></p>
+<p><span class="math inline">p_i</span> は <span class="math inline">R</span> （種数） 種の集まりにおける <span class="math inline">i</span>種 の割合です。 このとき、<code>ln()</code> は底は <code>e</code> ですが、動画の解析には <span class="math inline">ln() = log_2()</span> としました。 種の割合がすべての同じの場合 <span class="math inline">(p_i = 1/R)</span>、<span class="math inline">S = ln(R)</span> です。</p>
+<p><strong>例 1</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>) <span class="co"># ６種、各種２個体</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>pi <span class="ot">=</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="fu">sum</span>(pi <span class="sc">*</span> <span class="fu">log</span>(pi)) <span class="co"># シャノン指数の計算</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.791759</code></pre>
+</div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">length</span>(n)) <span class="co"># 種数R の ln()</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.791759</code></pre>
+</div>
+</div>
+<p>各種は均一に存在するので、種数のログ変換とシャノン指数の値は等しいです。 つまり、各種は同じ程度存在していることは、エントロピーが最大になることです。</p>
+<p><strong>例 2</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># ６種、各種の個数は無作為で決める</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>pi <span class="ot">=</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="fu">sum</span>(pi <span class="sc">*</span> <span class="fu">log</span>(pi)) <span class="co"># シャノン指数の計算</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.751053</code></pre>
+</div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">length</span>(n)) <span class="co"># R</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.791759</code></pre>
+</div>
+</div>
+<p>各種の個体数は不均一なので、シャノン指数は種数のログより低いです。</p>
+<p><strong>例 3</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">200</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>) <span class="co"># ６種、種1 は他の種の100倍存在する</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>pi <span class="ot">=</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="fu">sum</span>(pi <span class="sc">*</span> <span class="fu">log</span>(pi)) <span class="co"># シャノン指数の計算</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.268084</code></pre>
+</div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">length</span>(n)) <span class="co"># R</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.791759</code></pre>
+</div>
+</div>
+<p>一種が優先する場合、シャノン指数は <span class="math inline">ln(R)</span> よりとても低いです。 つまり、乱雑さや不規則さが低いです。</p>
+<p>動画解析の場合、グレーの値が <strong>種</strong> です。グレーの値の数が <strong>個体数</strong> です。 グレーは 0 から 254 の値をとります。</p>
+<p><strong>例 4</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">255</span>) <span class="co"># 0 から 254 の値の出現数は 1 </span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>pi <span class="ot">=</span> g <span class="sc">/</span> <span class="fu">sum</span>(g)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="fu">sum</span>(pi <span class="sc">*</span> <span class="fu">log</span>(pi)) <span class="co"># シャノン指数の計算</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5.541264</code></pre>
+</div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">length</span>(g)) <span class="co"># R</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5.541264</code></pre>
+</div>
+</div>
+<p>グレーの値は均一の出現するので、シャノン指数と <span class="math inline">ln(R)</span> は等しい。</p>
+<p><strong>例 5</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">1920</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>height <span class="ot">=</span> <span class="dv">1080</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>g <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">254</span>, <span class="at">size =</span> width <span class="sc">*</span> height, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>g <span class="ot">=</span> <span class="fu">table</span>(g) <span class="co"># グレー値ごとの数</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>pi <span class="ot">=</span> g <span class="sc">/</span> <span class="fu">sum</span>(g)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="fu">sum</span>(pi <span class="sc">*</span> <span class="fu">log</span>(pi)) <span class="co"># シャノン指数の計算</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5.541206</code></pre>
+</div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">length</span>(g)) <span class="co"># R</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5.541264</code></pre>
+</div>
+</div>
+<p><code>width</code> と <code>height</code> は画像の縦横のピクセル数です。 グレーの値はほぼ均一に出現したので、シャノン指数と <span class="math inline">ln(R)</span> は等しい。</p>
+<p><strong>例 6</strong></p>
+<p>画像を読み込み、グレースケールに変換する。</p>
+<div class="cell">
+<div class="sourceCode" id="cb33"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 画像の解像度は 4000x3000 です。</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>i1 <span class="ot">=</span> <span class="fu">image_read</span>(<span class="st">&quot;~/Lab_Data/Photos/Pew/b3160069.jpg&quot;</span>) <span class="co"># 岩の写真</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>i2 <span class="ot">=</span> <span class="fu">image_read</span>(<span class="st">&quot;~/Lab_Data/Photos/Pew/b7200033.jpg&quot;</span>) <span class="co"># ノコギリモクの写真</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>i1 <span class="ot">=</span> i1 <span class="sc">|&gt;</span> <span class="fu">image_quantize</span>(<span class="at">colorspace =</span> <span class="st">&quot;gray&quot;</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>i2 <span class="ot">=</span> i2 <span class="sc">|&gt;</span> <span class="fu">image_quantize</span>(<span class="at">colorspace =</span> <span class="st">&quot;gray&quot;</span>)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb34"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">image_append</span>(<span class="fu">c</span>(i1, i2), <span class="at">stack =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">image_resize</span>(<span class="st">&quot;x500&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="process_video_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="166" /></p>
+</div>
+</div>
+<p>シャノン指数（エントロピー）はここで求める。</p>
+<div class="cell">
+<div class="sourceCode" id="cb35"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>mat1 <span class="ot">=</span> <span class="fu">as.integer</span>(i1[[<span class="dv">1</span>]]) <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>mat2 <span class="ot">=</span> <span class="fu">as.integer</span>(i2[[<span class="dv">1</span>]]) <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">=</span> <span class="fu">table</span>(mat1) <span class="co"># グレー値ごとの数</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">=</span> <span class="fu">table</span>(mat2) <span class="co"># グレー値ごとの数</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>pi1 <span class="ot">=</span> g1 <span class="sc">/</span> <span class="fu">sum</span>(g1)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>pi2 <span class="ot">=</span> g2 <span class="sc">/</span> <span class="fu">sum</span>(g2)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">=</span> <span class="sc">-</span><span class="fu">sum</span>(pi1 <span class="sc">*</span> <span class="fu">log</span>(pi1)) <span class="co"># シャノン指数の計算</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">=</span> <span class="sc">-</span><span class="fu">sum</span>(pi2 <span class="sc">*</span> <span class="fu">log</span>(pi2)) <span class="co"># シャノン指数の計算</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>r1 <span class="ot">=</span> <span class="fu">log</span>(<span class="fu">length</span>(g1)) <span class="co"># R</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>r2 <span class="ot">=</span> <span class="fu">log</span>(<span class="fu">length</span>(g2)) <span class="co"># R</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(s1,s2)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.357269 3.804831</code></pre>
+</div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(r1,r2)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4.043051 4.158883</code></pre>
+</div>
+</div>
+<p><span class="math inline">ln(R)</span> の値は、解像度とグレー値の種類だけに依存するのです。 ノコギリモクの写真の方がグレー値の種類が多いので、<code>r2</code> は <code>r1</code> とより高いです。</p>
+<p><code>s1</code> と <code>s2</code> は異なりました。値が低いほどシャノン指数（エントロピー）が低いです。 岩の写真のほうが低いですね。これは、グレー値の数（種類）が偏っているからです。 ノコギリモクの写真の場合、様々なグレー値が存在しています。</p>
+<div class="cell">
+<div class="sourceCode" id="cb39"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">grp =</span> <span class="fu">c</span>(<span class="st">&quot;岩&quot;</span>, <span class="st">&quot;藻&quot;</span>),</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">data =</span> <span class="fu">list</span>(<span class="fu">as_tibble</span>(g1) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">grey =</span> mat1), </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">as_tibble</span>(g2) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">grey =</span> mat2)) ) <span class="sc">|&gt;</span> </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(data) <span class="sc">|&gt;</span> </span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">grey =</span> <span class="fu">as.numeric</span>(grey)) <span class="sc">|&gt;</span> </span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> grey, <span class="at">y =</span> n, <span class="at">fill =</span> grp),</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">position =</span> <span class="fu">position_dodge2</span>(),</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">254</span>, <span class="at">by =</span> <span class="dv">32</span>),</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">254</span>)) <span class="sc">+</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="st">&quot;画像&quot;</span>, <span class="at">end =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(grp), <span class="at">ncol =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="process_video_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672" /></p>
+</div>
+</div>
+<p>下記の解析には、<strong>デルタエントロピー</strong> を計算して実施した。 <strong>デルタエントロピー</strong> は動画のフレームとフレームの違いを求めて計算した。 今回は、2 フレーム開けて計算した。</p>
+<p>手順は次の通りです。</p>
+<ol type="1">
+<li>フレームをグレースケールに変換する。</li>
+<li><span class="math inline">t</span> と <span class="math inline">t+3</span> のフレームの差分をもとめる。</li>
+<li>差分の結果の絶対値をもとめる。</li>
+<li>差分の 255 を足して、値が 0 から 254 になるようにする。</li>
+<li>調整済み差分のエントロピーを求め、デルタエントロピーとする。</li>
+</ol>
+</section>
+<section id="作図の設定" class="level2">
+<h2>作図の設定</h2>
+<div class="cell">
+<div class="sourceCode" id="cb40"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">font_add</span>(<span class="at">family =</span> <span class="st">&quot;notosans&quot;</span>, <span class="at">regular =</span> <span class="st">&quot;NotoSansCJKjp-Regular.otf&quot;</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co"># theme_gray(base_size = 10, base_family = &quot;notosans&quot;) |&gt; theme_set()</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_pubr</span>(<span class="at">base_size =</span> <span class="dv">10</span>, <span class="at">base_family =</span> <span class="st">&quot;notosans&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">theme_set</span>()</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span></code></pre></div>
+</div>
+</section>
+<section id="関数の定義" class="level2">
+<h2>関数の定義</h2>
+<p>Python のデータファイルはこの関数で読み込みます。 Python のデータファイルの拡張子は <code>npy</code> です。</p>
+<div class="cell">
+<div class="sourceCode" id="cb41"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>read_npy <span class="ot">=</span> <span class="cf">function</span>(fnames) {</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  dset <span class="ot">=</span> np<span class="sc">$</span><span class="fu">load</span>(fnames) <span class="co"># numpy の load() を使って、 npy ファイルを読み込む</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">calculate_mean</span>(dset) <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<p>エントロピーデータは配列の状態で処理した方が早いです。 tibble化したデータの処理時間は数十時間かかることもあるからです。 <code>apply()</code> の場合は、5秒から10秒で処理されます。</p>
+<div class="cell">
+<div class="sourceCode" id="cb42"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>calculate_mean <span class="ot">=</span> <span class="cf">function</span>(X) {</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  submatrix_mean <span class="ot">=</span> <span class="cf">function</span>(x, zmat, ymat, xmat) {</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>(zmat[x[<span class="dv">1</span>], ymat[x[<span class="dv">2</span>], ], xmat[x[<span class="dv">3</span>], ]])</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  tau <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">dim</span>(X)[<span class="dv">1</span>]) <span class="co"># コマ軸 (時間)</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  y   <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">dim</span>(X)[<span class="dv">2</span>]) <span class="co"># y 軸</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  x   <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">dim</span>(X)[<span class="dv">3</span>]) <span class="co"># x 軸</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 画像は 6 x 6 に区分する</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  xmat <span class="ot">=</span> <span class="fu">matrix</span>(x, <span class="at">nrow =</span> <span class="dv">6</span>, <span class="at">byrow =</span> T)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  ymat <span class="ot">=</span> <span class="fu">matrix</span>(y, <span class="at">nrow =</span> <span class="dv">6</span>, <span class="at">byrow =</span> T)</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  egrid <span class="ot">=</span> <span class="fu">expand.grid</span>(tau, <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(xmat), <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(ymat))</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(egrid, </span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">value =</span> <span class="fu">apply</span>(<span class="at">X =</span> egrid, </span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>                      <span class="at">MARGIN =</span> <span class="dv">1</span>, </span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>                      <span class="at">FUN =</span> submatrix_mean, </span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>                      <span class="at">zmat =</span> X, </span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ymat =</span> ymat, </span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>                      <span class="at">xmat =</span> xmat))</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</section>
+<section id="データ読み込みの紹介" class="level2">
+<h2>データ読み込みの紹介</h2>
+<p>フォルダとサブフォルダを取得する。</p>
+<div class="cell">
+<div class="sourceCode" id="cb43"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>folder <span class="ot">=</span> <span class="st">&quot;~/Lab_Data/sudar/movie/&quot;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>subfolders <span class="ot">=</span> <span class="fu">dir</span>(folder, <span class="at">full =</span> <span class="cn">TRUE</span>, <span class="at">pattern =</span> <span class="st">&quot;arikawa_[0-9]{6}&quot;</span>)</span></code></pre></div>
+</div>
+<p>時刻データを読み込む。 重複してる場合もあるので、<code>distinct()</code> に渡す。</p>
+<div class="cell">
+<div class="sourceCode" id="cb44"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>YMD <span class="ot">=</span> <span class="st">&quot;220728&quot;</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>dtdata <span class="ot">=</span> <span class="fu">str_subset</span>(subfolders, YMD) <span class="sc">|&gt;</span> </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir</span>(<span class="st">&quot;datetimes.csv&quot;</span>, <span class="at">full =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 104 Columns: 4
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr  (1): filename
+dbl  (1): nframes
+dttm (2): starttime, endtime
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<p><code>npy</code> データを読み込む。</p>
+<div class="cell">
+<div class="sourceCode" id="cb46"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>fnames <span class="ot">=</span> <span class="fu">str_subset</span>(subfolders, YMD) <span class="sc">|&gt;</span> </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir</span>(<span class="st">&quot;delta_entropy_csvdata&quot;</span>, <span class="at">full =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir</span>(<span class="st">&quot;npy&quot;</span>, <span class="at">full =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>dset <span class="ot">=</span> <span class="fu">tibble</span>(fnames) <span class="sc">|&gt;</span> </span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">data =</span> <span class="fu">map</span>(fnames, read_npy))</span></code></pre></div>
+</div>
+<p><code>dtdata</code> と <code>dset</code> を結合する。</p>
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>dall <span class="ot">=</span> <span class="fu">inner_join</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(dtdata, <span class="at">axis =</span> <span class="fu">str_extract</span>(filename, <span class="st">&quot;suda_*.*_[0-9]{6}&quot;</span>)),</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(dset, <span class="at">axis =</span> <span class="fu">str_extract</span>(<span class="fu">basename</span>(fnames), <span class="st">&quot;suda_*.*_[0-9]{6}&quot;</span>)),</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">&quot;axis&quot;</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(fnames, filename))</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>dall <span class="ot">=</span> dall <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">tau =</span> <span class="fu">floor_date</span>(starttime, <span class="st">&quot;minutes&quot;</span>))</span></code></pre></div>
+</div>
+</section>
+<section id="データの作図" class="level2">
+<h2>データの作図</h2>
+<ul>
+<li><code>Var1</code> は時間軸（フレーム）</li>
+<li><code>Var2</code> は y 軸</li>
+<li><code>Var3</code> は x 軸</li>
+<li><code>value</code> はデルタエントロピー</li>
+</ul>
+<p><strong>デルタエントロピーの時系列図：総平均</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb48"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">=</span> dall <span class="sc">|&gt;</span> </span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(data) <span class="sc">|&gt;</span> </span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tau) <span class="sc">|&gt;</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">z =</span> <span class="fu">mean</span>(value),</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">s =</span> <span class="fu">sd</span>(value))</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tmp) <span class="sc">+</span> </span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> tau, <span class="at">y =</span> z)) <span class="sc">+</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">x =</span> tau, <span class="at">ymin =</span> z <span class="sc">-</span> s, <span class="at">ymax =</span> z <span class="sc">+</span> s),</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="process_video_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672" /></p>
+</div>
+</div>
+<p><strong>デルタエントロピーの時系列図：コマごとの平均</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb49"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">=</span> dall <span class="sc">|&gt;</span> </span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(data) <span class="sc">|&gt;</span> </span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tau, Var2, Var3) <span class="sc">|&gt;</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">z =</span> <span class="fu">mean</span>(value),</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">s =</span> <span class="fu">sd</span>(value))</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by &#39;tau&#39;, &#39;Var2&#39;. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tmp) <span class="sc">+</span> </span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> tau, <span class="at">y =</span> z)) <span class="sc">+</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">x =</span> tau, <span class="at">ymin =</span> z <span class="sc">-</span> s, <span class="at">ymax =</span> z <span class="sc">+</span> s),</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="at">rows =</span> <span class="fu">vars</span>(Var3),</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">cols =</span> <span class="fu">vars</span>(Var2))</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="process_video_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672" /></p>
+</div>
+</div>
+<p><strong>デルタエントロピーの時系列図</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb52"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">=</span> dall <span class="sc">|&gt;</span> </span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(data) <span class="sc">|&gt;</span> </span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Var2, Var3) <span class="sc">|&gt;</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">z =</span> <span class="fu">mean</span>(value),</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">s =</span> <span class="fu">sd</span>(value))</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by &#39;Var2&#39;. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>T1 <span class="ot">=</span> <span class="st">&quot;平均値&quot;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>T2 <span class="ot">=</span> <span class="st">&quot;標準偏差&quot;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> <span class="fu">ggplot</span>(tmp) <span class="sc">+</span> <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">x =</span> Var3, <span class="at">y =</span> Var2, <span class="at">fill =</span> z)) <span class="sc">+</span> <span class="fu">scale_fill_viridis_c</span>(<span class="at">end =</span> <span class="fl">0.9</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> T1)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">=</span> <span class="fu">ggplot</span>(tmp) <span class="sc">+</span> <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">x =</span> Var3, <span class="at">y =</span> Var2, <span class="at">fill =</span> s)) <span class="sc">+</span> <span class="fu">scale_fill_viridis_c</span>(<span class="at">end =</span> <span class="fl">0.9</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> T2)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">ncol =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="process_video_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672" /></p>
+</div>
+</div>
+<div id="quarto-navigation-envelope" class="hidden">
+<p><span class="hidden" data-render-id="quarto-int-sidebar-title">研究室用：動画エントロピーの解析</span> <span class="hidden" data-render-id="quarto-int-navbar-title">研究室用：動画エントロピーの解析</span></p>
+</div>
+<div id="quarto-meta-markdown" class="hidden">
+<p><span class="hidden" data-render-id="quarto-metatitle">研究室用：動画エントロピーの解析</span> <span class="hidden" data-render-id="quarto-twittercardtitle">研究室用：動画エントロピーの解析</span> <span class="hidden" data-render-id="quarto-ogcardtitle">研究室用：動画エントロピーの解析</span> <span class="hidden" data-render-id="quarto-metadesc">エントロピーは計算済み</span></p>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id = "quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "完了");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+</body>
+
+</html>

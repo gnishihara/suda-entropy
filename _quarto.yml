@@ -8,3 +8,4 @@ execute:
 format:
   html:
     html-math-method: katex
+lang: ja
