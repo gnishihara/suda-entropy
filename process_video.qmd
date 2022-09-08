@@ -5,8 +5,7 @@ date: "2022-09-08"
 author: "Greg Nishihara"
 format: 
   html:
-    self-contained: true
-    output-dir: docs
+    output-file: index.html
 ---
 
 > エントロピーは計算済みです。

@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  render: 
+    - process_video.qmd
 execute:
   freeze: auto
 format:
