@@ -98,9 +98,10 @@ def create_lineplotdata(X1):
     N1 = 17
     N2 = 32
   elif X1.shape[1] == (1344//14):
-    N1 = (1344//14) / 6
-    N2 = (2688//14) / 6
+    N1 = (1344//14) // 6
+    N2 = (2688//14) // 6
   # N1 = 17, N2 = 32 creates a 6 x 6 matrix.
+  
   Xsub = []
   for i in range(0, X1.shape[0]):
     Xsub.append(calculate_submatrix_average(X1[i], N1 = N1, N2 = N2))
@@ -114,8 +115,8 @@ def make_static_plot(X1, X2, Xsub, xval, fname):
     N1 = 17
     N2 = 32
   elif X1.shape[1] == (1344//14):
-    N1 = (1344//14) / 6
-    N2 = (2688//14) / 6
+    N1 = (1344//14) // 6
+    N2 = (2688//14) // 6
   ygridval = []
   for z in range(6+1):
     ygridval.append(z * N1)  
@@ -177,8 +178,8 @@ def make_dynamic_plot(X1, X2, Xsub, xval, fname):
     N1 = 17
     N2 = 32
   elif X1.shape[1] == (1344//14):
-    N1 = (1344//14) / 6
-    N2 = (2688//14) / 6
+    N1 = (1344//14) // 6
+    N2 = (2688//14) // 6
   ygval = np.arange(0, N1*(6+1), N1)
   xgval = np.arange(0, N2*(6+1), N2)  
   nframes, nrows, ncols = X1.shape  
@@ -253,9 +254,13 @@ def make_dynamic_plot(X1, X2, Xsub, xval, fname):
   anim.save(fname, writer =  "ffmpeg", fps = 30)  
   plt.close()
 
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
 # Change if needed. ##########################################################################################
 overwrite_file = False
-basepath = "/home/gnishihara/Lab_Data/sudar/movie/arikawa_220621"
+basepath = "/home/gnishihara/Lab_Data/sudar/movie/arikawa_220622"
 ##############################################################################################################
 
 filelist = os.listdir(basepath)
@@ -266,27 +271,8 @@ included_extensions = ['npy']
 filelist1 = [f for f in filelist1 if any(f.endswith(ext) for ext in included_extensions)]
 filelist2 = [f for f in filelist2 if any(f.endswith(ext) for ext in included_extensions)]
 
-## Create the static plots ##################################################################################
-for f1, f2 in zip(filelist1, filelist2):
-  start_time = time.time()
-  dcf = (os.path.join(deltacsvpath, f1)) 
-  ecf = (os.path.join(entrocsvpath, f2)) 
-  spf = os.path.join(staticimagepath, (Path(f1).stem + ".png").replace("-delta", ""))
-  dpf = os.path.join(dynamicimagepath, (Path(f1).stem + ".mp4").replace("-delta", "-animation"))
-  
-  # Read all 6000 frames and convert to gray scale.
-  # This will take a while.
-  
-  if os.path.exists(dcf) and os.path.exists(ecf) and not os.path.exists(spf) or overwrite_file:
-    X1 = np.load(dcf)
-    X2 = np.load(ecf)
-    # Recalculate the number of frames after calculating the delta-entropy.
-    # Value should be equal to nframes - offset
-    xval, Xsub = create_lineplotdata(X1)
-    print("Create static plot.")
-    make_static_plot(X1, X2, Xsub, xval, spf)
-  end_time = time.time()
-  print(f"========== Processing time: {(end_time - start_time)/60: 0.5f} minutes ==========")
+# f1 = filelist1[1]  # For testing only.
+# f2 = filelist2[1]  # For testing only.
 
 ## Create the dynamic plots ##################################################################################
 for f1, f2 in zip(filelist1, filelist2):
@@ -305,11 +291,13 @@ for f1, f2 in zip(filelist1, filelist2):
     # Recalculate the number of frames after calculating the delta-entropy.
     # Value should be equal to nframes - offset
     xval, Xsub = create_lineplotdata(X1)
-    print("Create dynamic plot.")
+    print(f"{time.ctime()}")
+    print(f"Create dynamic plot using the files {f1} and {f2}.")
     make_dynamic_plot(X1, X2, Xsub, xval, dpf)
-
-  end_time = time.time()
-  print(f"========== Processing time: {(end_time - start_time)/60: 0.5f} minutes ==========")
+    end_time = time.time()
+    print(f"========== Processing time: {(end_time - start_time)/60: 0.5f} minutes ==========")
+  else:
+    print(f"Skip files {f1} and {f2}.")
 
 
 # f1 = filelist1[20]
