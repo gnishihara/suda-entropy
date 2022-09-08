@@ -1,6 +1,7 @@
 project:
   title: "Image_Entropy"
   output-dir: docs/
+  post-render: mv docs/image_entropy.html docs/index.html
   render: 
     - image_entropy.qmd
 execute: 
