@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "process_video.html",
+    "href": "process_video.html",
+    "title": "研究室用：動画エントロピーの解析",
+    "section": "",
+    "text": "エントロピーは計算済みです。 データファイルはそれぞれの動画フォルダのサブフォルダに入っている。"
+  },
+  {
+    "objectID": "process_video.html#必要なパッケージ",
+    "href": "process_video.html#必要なパッケージ",
+    "title": "研究室用：動画エントロピーの解析",
+    "section": "必要なパッケージ",
+    "text": "必要なパッケージ\n\nlibrary(tidyverse)\n\n── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──\n✔ ggplot2 3.3.6     ✔ purrr   0.3.4\n✔ tibble  3.1.8     ✔ dplyr   1.0.9\n✔ tidyr   1.2.0     ✔ stringr 1.4.0\n✔ readr   2.1.2     ✔ forcats 0.5.1\n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\n\nlibrary(magick)\n\nLinking to ImageMagick 6.9.11.60\nEnabled features: fontconfig, freetype, fftw, heic, lcms, pango, webp, x11\nDisabled features: cairo, ghostscript, raw, rsvg\nUsing 32 threads\n\nlibrary(ggvegan)\n\nLoading required package: vegan\nLoading required package: permute\nLoading required package: lattice\nThis is vegan 2.6-2\n\nlibrary(ggpubr)\nlibrary(patchwork)\nlibrary(showtext)\n\nLoading required package: sysfonts\nLoading required package: showtextdb\n\nlibrary(lubridate)\n\n\nAttaching package: 'lubridate'\n\nThe following objects are masked from 'package:base':\n\n    date, intersect, setdiff, union\n\nlibrary(vegan)\nlibrary(gnnlab)\n\n# Python の numpy モジュールを読み込む\nlibrary(reticulate)\n\nPython のモジュールはここで準備する。\n\nnp = import(\"numpy\")"
+  },
+  {
+    "objectID": "process_video.html#エントロピーとは",
+    "href": "process_video.html#エントロピーとは",
+    "title": "研究室用：動画エントロピーの解析",
+    "section": "エントロピーとは",
+    "text": "エントロピーとは\nエントロピー \\((S)\\) は 乱雑さ や 不規則さ を表現する情報の尺度です。 熱力学、生態学、情報理論に応用されています。\n生態学のシャノン指数 \\((H')\\) はエントロピーと同じ用に求めます。\n\\[\nS = H' = -\\sum_{i=1}^{R} p_i\\,ln( p_i)\n\\]\n\\(p_i\\) は \\(R\\) （種数） 種の集まりにおける \\(i\\)種 の割合です。 このとき、ln() は底は e ですが、動画の解析には \\(ln() = log_2()\\) としました。 種の割合がすべての同じの場合 \\((p_i = 1/R)\\)、\\(S = ln(R)\\) です。\n例 1\n\nn = c(2, 2, 2, 2, 2, 2) # ６種、各種２個体\npi = n / sum(n)\n-sum(pi * log(pi)) # シャノン指数の計算\n\n[1] 1.791759\n\nlog(length(n)) # 種数R の ln()\n\n[1] 1.791759\n\n\n各種は均一に存在するので、種数のログ変換とシャノン指数の値は等しいです。 つまり、各種は同じ程度存在していることは、エントロピーが最大になることです。\n例 2\n\nset.seed(2022)\nn = sample(1:6, size = 6, replace = TRUE) # ６種、各種の個数は無作為で決める\npi = n / sum(n)\n-sum(pi * log(pi)) # シャノン指数の計算\n\n[1] 1.751053\n\nlog(length(n)) # R\n\n[1] 1.791759\n\n\n各種の個体数は不均一なので、シャノン指数は種数のログより低いです。\n例 3\n\nset.seed(2022)\nn = c(200,2,2,2,2,2) # ６種、種1 は他の種の100倍存在する\npi = n / sum(n)\n-sum(pi * log(pi)) # シャノン指数の計算\n\n[1] 0.268084\n\nlog(length(n)) # R\n\n[1] 1.791759\n\n\n一種が優先する場合、シャノン指数は \\(ln(R)\\) よりとても低いです。 つまり、乱雑さや不規則さが低いです。\n動画解析の場合、グレーの値が 種 です。グレーの値の数が 個体数 です。 グレーは 0 から 254 の値をとります。\n例 4\n\ng = rep(1, 255) # 0 から 254 の値の出現数は 1 \npi = g / sum(g)\n-sum(pi * log(pi)) # シャノン指数の計算\n\n[1] 5.541264\n\nlog(length(g)) # R\n\n[1] 5.541264\n\n\nグレーの値は均一の出現するので、シャノン指数と \\(ln(R)\\) は等しい。\n例 5\n\nwidth = 1920\nheight = 1080\ng = sample(0:254, size = width * height, replace = TRUE)\ng = table(g) # グレー値ごとの数\npi = g / sum(g)\n-sum(pi * log(pi)) # シャノン指数の計算\n\n[1] 5.541206\n\nlog(length(g)) # R\n\n[1] 5.541264\n\n\nwidth と height は画像の縦横のピクセル数です。 グレーの値はほぼ均一に出現したので、シャノン指数と \\(ln(R)\\) は等しい。\n例 6\n画像を読み込み、グレースケールに変換する。\n\n# 画像の解像度は 4000x3000 です。\ni1 = image_read(\"~/Lab_Data/Photos/Pew/b3160069.jpg\") # 岩の写真\ni2 = image_read(\"~/Lab_Data/Photos/Pew/b7200033.jpg\") # ノコギリモクの写真\n\ni1 = i1 |> image_quantize(colorspace = \"gray\")\ni2 = i2 |> image_quantize(colorspace = \"gray\")\n\n\nimage_append(c(i1, i2), stack = TRUE) |> \n  image_resize(\"x500\")\n\n\n\n\nシャノン指数（エントロピー）はここで求める。\n\nmat1 = as.integer(i1[[1]]) |> as.numeric()\nmat2 = as.integer(i2[[1]]) |> as.numeric()\ng1 = table(mat1) # グレー値ごとの数\ng2 = table(mat2) # グレー値ごとの数\n\npi1 = g1 / sum(g1)\npi2 = g2 / sum(g2)\n\ns1 = -sum(pi1 * log(pi1)) # シャノン指数の計算\ns2 = -sum(pi2 * log(pi2)) # シャノン指数の計算\n\nr1 = log(length(g1)) # R\nr2 = log(length(g2)) # R\n\nc(s1,s2)\n\n[1] 3.357269 3.804831\n\nc(r1,r2)\n\n[1] 4.043051 4.158883\n\n\n\\(ln(R)\\) の値は、解像度とグレー値の種類だけに依存するのです。 ノコギリモクの写真の方がグレー値の種類が多いので、r2 は r1 とより高いです。\ns1 と s2 は異なりました。値が低いほどシャノン指数（エントロピー）が低いです。 岩の写真のほうが低いですね。これは、グレー値の数（種類）が偏っているからです。 ノコギリモクの写真の場合、様々なグレー値が存在しています。\n\ntibble(grp = c(\"岩\", \"藻\"),\n       data = list(as_tibble(g1) |> rename(grey = mat1), \n                   as_tibble(g2) |> rename(grey = mat2)) ) |> \n  unnest(data) |> \n  mutate(grey = as.numeric(grey)) |> \n  ggplot() + \n  geom_col(aes(x = grey, y = n, fill = grp),\n           position = position_dodge2(),\n          width = 1) +\n  scale_x_continuous(breaks = seq(0, 254, by = 32),\n                     limits = c(0, 254)) +\n  scale_fill_viridis_d(\"画像\", end = 0.8) +\n  guides(fill = \"none\") +\n  facet_wrap(vars(grp), ncol = 1)\n\n\n\n\n下記の解析には、デルタエントロピー を計算して実施した。 デルタエントロピー は動画のフレームとフレームの違いを求めて計算した。 今回は、2 フレーム開けて計算した。\n手順は次の通りです。\n\nフレームをグレースケールに変換する。\n\\(t\\) と \\(t+3\\) のフレームの差分をもとめる。\n差分の結果の絶対値をもとめる。\n差分の 255 を足して、値が 0 から 254 になるようにする。\n調整済み差分のエントロピーを求め、デルタエントロピーとする。"
+  },
+  {
+    "objectID": "process_video.html#作図の設定",
+    "href": "process_video.html#作図の設定",
+    "title": "研究室用：動画エントロピーの解析",
+    "section": "作図の設定",
+    "text": "作図の設定\n\nfont_add(family = \"notosans\", regular = \"NotoSansCJKjp-Regular.otf\")\n# theme_gray(base_size = 10, base_family = \"notosans\") |> theme_set()\ntheme_pubr(base_size = 10, base_family = \"notosans\") |> theme_set()\nshowtext_auto()"
+  },
+  {
+    "objectID": "process_video.html#関数の定義",
+    "href": "process_video.html#関数の定義",
+    "title": "研究室用：動画エントロピーの解析",
+    "section": "関数の定義",
+    "text": "関数の定義\nPython のデータファイルはこの関数で読み込みます。 Python のデータファイルの拡張子は npy です。\n\nread_npy = function(fnames) {\n  dset = np$load(fnames) # numpy の load() を使って、 npy ファイルを読み込む\n  calculate_mean(dset) |> as_tibble()\n}\n\nエントロピーデータは配列の状態で処理した方が早いです。 tibble化したデータの処理時間は数十時間かかることもあるからです。 apply() の場合は、5秒から10秒で処理されます。\n\ncalculate_mean = function(X) {\n  submatrix_mean = function(x, zmat, ymat, xmat) {\n    mean(zmat[x[1], ymat[x[2], ], xmat[x[3], ]])\n  }\n  tau = seq(1, dim(X)[1]) # コマ軸 (時間)\n  y   = seq(1, dim(X)[2]) # y 軸\n  x   = seq(1, dim(X)[3]) # x 軸\n  # 画像は 6 x 6 に区分する\n  xmat = matrix(x, nrow = 6, byrow = T)\n  ymat = matrix(y, nrow = 6, byrow = T)\n  egrid = expand.grid(tau, 1:nrow(xmat), 1:nrow(ymat))\n  cbind(egrid, \n        value = apply(X = egrid, \n                      MARGIN = 1, \n                      FUN = submatrix_mean, \n                      zmat = X, \n                      ymat = ymat, \n                      xmat = xmat))\n}"
+  },
+  {
+    "objectID": "process_video.html#データ読み込みの紹介",
+    "href": "process_video.html#データ読み込みの紹介",
+    "title": "研究室用：動画エントロピーの解析",
+    "section": "データ読み込みの紹介",
+    "text": "データ読み込みの紹介\nフォルダとサブフォルダを取得する。\n\nfolder = \"~/Lab_Data/sudar/movie/\"\nsubfolders = dir(folder, full = TRUE, pattern = \"arikawa_[0-9]{6}\")\n\n時刻データを読み込む。 重複してる場合もあるので、distinct() に渡す。\n\nYMD = \"220728\"\ndtdata = str_subset(subfolders, YMD) |> \n  dir(\"datetimes.csv\", full = TRUE) |> \n  read_csv() |> \n  distinct()\n\nRows: 104 Columns: 4\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr  (1): filename\ndbl  (1): nframes\ndttm (2): starttime, endtime\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\n\nnpy データを読み込む。\n\nfnames = str_subset(subfolders, YMD) |> \n  dir(\"delta_entropy_csvdata\", full = TRUE) |> \n  dir(\"npy\", full = TRUE)\n\ndset = tibble(fnames) |> \n  mutate(data = map(fnames, read_npy))\n\ndtdata と dset を結合する。\n\ndall = inner_join(\n    mutate(dtdata, axis = str_extract(filename, \"suda_*.*_[0-9]{6}\")),\n    mutate(dset, axis = str_extract(basename(fnames), \"suda_*.*_[0-9]{6}\")),\n    by = \"axis\"\n) |> select(-c(fnames, filename))\n\ndall = dall |> mutate(tau = floor_date(starttime, \"minutes\"))"
+  },
+  {
+    "objectID": "process_video.html#データの作図",
+    "href": "process_video.html#データの作図",
+    "title": "研究室用：動画エントロピーの解析",
+    "section": "データの作図",
+    "text": "データの作図\n\nVar1 は時間軸（フレーム）\nVar2 は y 軸\nVar3 は x 軸\nvalue はデルタエントロピー\n\nデルタエントロピーの時系列図：総平均\n\ntmp = dall |> \n  unnest(data) |> \n  group_by(tau) |>\n  summarise(z = mean(value),\n            s = sd(value))\nggplot(tmp) + \n  geom_point(aes(x = tau, y = z)) +\n  geom_errorbar(aes(x = tau, ymin = z - s, ymax = z + s),\n                width = 0)\n\n\n\n\nデルタエントロピーの時系列図：コマごとの平均\n\ntmp = dall |> \n  unnest(data) |> \n  group_by(tau, Var2, Var3) |>\n  summarise(z = mean(value),\n            s = sd(value))\n\n`summarise()` has grouped output by 'tau', 'Var2'. You can override using the\n`.groups` argument.\n\nggplot(tmp) + \n  geom_point(aes(x = tau, y = z)) +\n  geom_errorbar(aes(x = tau, ymin = z - s, ymax = z + s),\n                width = 0) +\n  facet_grid(rows = vars(Var3),\n             cols = vars(Var2))\n\n\n\n\nデルタエントロピーの時系列図\n\ntmp = dall |> \n  unnest(data) |> \n  group_by(Var2, Var3) |>\n  summarise(z = mean(value),\n            s = sd(value))\n\n`summarise()` has grouped output by 'Var2'. You can override using the\n`.groups` argument.\n\nT1 = \"平均値\"\nT2 = \"標準偏差\"\np1 = ggplot(tmp) + geom_tile(aes(x = Var3, y = Var2, fill = z)) + scale_fill_viridis_c(end = 0.9) + labs(title = T1)\np2 = ggplot(tmp) + geom_tile(aes(x = Var3, y = Var2, fill = s)) + scale_fill_viridis_c(end = 0.9) + labs(title = T2)\np1 + p2 + plot_layout(ncol = 1)"
+  }
+]

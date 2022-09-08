@@ -1,9 +1,16 @@
 ---
-title: "動画エントロピーの解析"
+title: "研究室用：動画エントロピーの解析"
+subtitle: "エントロピーは計算済み"
 date: "2022-09-08"
 author: "Greg Nishihara"
-format: html
+format: 
+  html:
+    self-contained: true
+    output-dir: docs
 ---
+
+> エントロピーは計算済みです。
+> データファイルはそれぞれの動画フォルダのサブフォルダに入っている。
 
 ## 必要なパッケージ
 
